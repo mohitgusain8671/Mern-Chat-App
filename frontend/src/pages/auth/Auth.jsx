@@ -47,26 +47,30 @@ const Auth = () => {
   }
   const handleLogin = async () => {
     if (validateLogin()) {
-      const response = await apiClient.post(LOGIN_ROUTES, 
-        { email,password },
-        { withCredentials: true }
-      );
-      console.log(response.data);
-      if (response.data.success) {
-        toast.success("Login successful");
-        if (response.data.data.user._id) {
-          setUserInfo(response.data.data.user);
-          if(!response.data.data.user.profileSetup) {
-            navigate("/profile");
-          }
-          else {
-            navigate("/chat");
-          }
+      try {
+        const response = await apiClient.post(LOGIN_ROUTES, 
+          { email,password },
+          { withCredentials: true }
+        );
+        if (response.data.success) {
+          toast.success("Login successful");
+          if (response.data.data.user._id) {
+            setUserInfo(response.data.data.user);
+            if(!response.data.data.user.profileSetup) {
+              navigate("/profile");
+            }
+            else {
+              navigate("/chat");
+            }
 
+          }
+        } else {
+          toast.error(response.data.data.error);
         }
-      } else {
-        toast.error(response.data.error);
-      }
+      }catch(err){
+        console.log(err);
+        toast.error(err.response.data.error);
+      } 
     }
   }
   const handleRegister = async () => {
@@ -74,7 +78,7 @@ const Auth = () => {
     const response = await apiClient.post(SIGNUP_ROUTES, {
       email,
       password
-    });
+    },{withCredentials: true});
     if (response.data.success) {
       setUserInfo(response.data.data.user);
       toast.success("Successful Registration");

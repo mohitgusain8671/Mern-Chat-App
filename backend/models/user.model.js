@@ -11,7 +11,6 @@ const userSchema = new mongoose.Schema ({
     image : {
         type: String,
         required: false,
-        default: 'https://img.icons8.com/fluency-systems-filled/100/7950F2/user.png'
     },
     email : { 
         type: String, 
@@ -36,6 +35,13 @@ const userSchema = new mongoose.Schema ({
     profileSetup: {
         type: Boolean,
         default: false,
+    },
+    bio: {
+        type: String,
+        required: false,
+        default: 'Hey , I am a user of Syncronus Chat App.',
+        maxLength: 150,
+        trim: true,
     }
 }, {
     timestamps: true,

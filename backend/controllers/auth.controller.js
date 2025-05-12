@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { JWT_SECRET, JWT_EXPIRES_IN } from "../config/env.js";
 import mongoose from "mongoose";
+import { renameSync, unlinkSync } from 'fs'
+
 
 export const signIn = async (req,res,next) => {
     try{
@@ -125,9 +127,94 @@ export const getUserInfo = async (req,res,next) => {
                 name: user.name,
                 image: user.image,
                 color: user.color,
+                bio: user.bio,
             }
         });
     } catch(error) {
         next(error);
     }
 };
+
+export const updateProfile = async (req,res,next) => {
+    try{
+        const { name,bio,selectedColor } = req.body
+        if(!name || !bio){
+            const error = new Error('Name and Bio are required');
+            error.statusCode = 400;
+            throw error;
+        }
+        const user = await User.findByIdAndUpdate(
+            req.userId,
+            {
+                name: name,
+                bio: bio,
+                color: selectedColor,
+                profileSetup: true,
+            },
+            { new: true, runValidators: true }
+        );
+        res.status(200).json({
+            success: true,
+            message: 'Profile updated successfully',
+            user: {
+                _id: user._id,
+                name: user.name,
+                bio: user.bio,
+                profileSetup: user.profileSetup,
+                email: user.email,
+                image: user.image,
+                color: user.color,
+            }
+    });
+
+    } catch (err){
+        next(err);
+    }
+}
+
+export const addImage = async (req,res,next) => {
+    try{
+        if(!req.file){
+            const error = new Error('No image provided');
+            error.statusCode = 400;
+            throw error;
+        }
+        const date = Date.now();
+        let fileName = "uploads/profiles/" + date + req.file.originalname;
+        renameSync(req.file.path,fileName);
+        const updatedUser = await User.findByIdAndUpdate(req.userId,{image:fileName},{
+            new: true,
+            runValidators: true
+        });
+        res.status(200).json({
+            success: true,
+            message: 'Image uploaded successfully',
+            image : updatedUser.image
+        });
+    } catch (err){
+        next(err);
+    }
+}
+
+export const removeImage = async (req,res,next) => {
+    try{
+        const userId = req.userId;
+        const user = await User.findById(userId);
+        if(!user){
+            const error = new Error('User not found');
+            error.statusCode = 404;
+            throw error;
+        }
+        if(user.image){    
+            unlinkSync(user.image);
+        }
+        user.image = null;
+        await user.save();
+        return res.status(200).json({
+            success: true,
+            message: 'Profile Image removed successfully',
+        });
+    } catch (err){
+        next(err);
+    }
+}
