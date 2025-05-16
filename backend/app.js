@@ -5,6 +5,7 @@ import { NODE_ENV, ORIGIN, PORT } from './config/env.js';
 import connectToDB from './database/mongodb.js';
 import authRouter from './routes/auth.routes.js';
 import errorMiddleware from './middleware/error.middleware.js';
+import contactRouter from './routes/contact.routes.js';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/contacts',contactRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
