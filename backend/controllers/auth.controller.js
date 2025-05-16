@@ -28,7 +28,6 @@ export const signIn = async (req,res,next) => {
         }
         const token = jwt.sign({userId: user._id}, JWT_SECRET, {expiresIn: JWT_EXPIRES_IN});
         res.cookie('token', token, {
-            httpOnly: true,
             secure: true,
             maxAge: 24 * 60 * 60 * 1000, // 1 day
             sameSite: 'None',
@@ -82,7 +81,6 @@ export const signUp = async (req,res,next) => {
             { expiresIn: JWT_EXPIRES_IN }
         );
         res.cookie('token', token, {
-            httpOnly: true,
             secure: true,
             sameSite: 'None',
             maxAge: 24 * 60 * 60 * 1000, // 1 day
@@ -213,6 +211,22 @@ export const removeImage = async (req,res,next) => {
         return res.status(200).json({
             success: true,
             message: 'Profile Image removed successfully',
+        });
+    } catch (err){
+        next(err);
+    }
+}
+
+export const signOut = async (req,res,next) => {
+    try{
+        res.clearCookie("token", {
+            secure: true,
+            sameSite: 'None',
+            path: '/', // Important if it was set with default or explicit path
+        });
+        return res.status(200).json({
+            success: true,
+            message: 'Logged out successfully',
         });
     } catch (err){
         next(err);
