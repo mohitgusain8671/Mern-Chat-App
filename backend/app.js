@@ -6,6 +6,7 @@ import connectToDB from './database/mongodb.js';
 import authRouter from './routes/auth.routes.js';
 import errorMiddleware from './middleware/error.middleware.js';
 import contactRouter from './routes/contact.routes.js';
+import serverSocket from './socket.js';
 
 const app = express();
 
@@ -31,9 +32,11 @@ app.get('/', (req, res) => {
 
 app.use(errorMiddleware);
 
-app.listen(PORT,async () => {
+const server = app.listen(PORT,async () => {
     console.log(`Server is running on port ${PORT} in ${NODE_ENV} mode`);
     await connectToDB();
 });
+
+serverSocket(server);
 
 export default app;
