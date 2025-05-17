@@ -1,4 +1,6 @@
 import { TooltipWrapper } from '@/components/ToolTipWrapper'
+import { useSocketContext } from '@/context/SocketContext'
+import { useAppStore } from '@/store'
 import EmojiPicker from 'emoji-picker-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { GrAttachment } from 'react-icons/gr'
@@ -7,7 +9,8 @@ import { RiEmojiStickerLine } from 'react-icons/ri'
 
 const MessageBar = () => {
   const emojiRef = useRef();
-
+  const {selectedChatType, selectedChatData, userInfo} = useAppStore();
+  const socket = useSocketContext();
   const [message, setMessage] = useState("")
   const [emojiPicker, setEmojiPicker] = useState(false)
 
@@ -28,11 +31,20 @@ const MessageBar = () => {
   },[emojiRef])
 
   const handleSendMessage = async () => {
-
+    if(selectedChatType==='contact') {
+      const messageData = {
+        sender: userInfo._id,
+        recipient: selectedChatData._id,
+        content: message,
+        messageType: "text",
+        fileUrl: undefined,
+      }
+      socket.emit("sendMessage",messageData)
+    }
   }
 
   return (
-    <div className='h-[10vh] bg-[#1c1d25] flex justify-center items-center px-8 mb-6 gap-6'>
+    <div className='h-[10dvh] bg-[#1c1d25] flex justify-center items-center px-8 mb-6 gap-6'>
       <div className="flex-1 flex rounded-md items-center gap-5 pr-5 bg-[#2a2b33]">
         <input 
           type="text" 

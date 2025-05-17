@@ -1,5 +1,6 @@
 import { Server as SocketIOServer } from 'socket.io'
 import { ORIGIN } from './config/env.js';
+import Message from './models/message.model.js';
 
 const serverSocket = (server) => {
     const io = new SocketIOServer(server,{
@@ -10,6 +11,7 @@ const serverSocket = (server) => {
         }
     });
     const userSocketMap = new Map();
+
     const disconnect = (socket) => {
         console.log("Cient Disconnected");
         for(const [userId,socketId] of userSocketMap.entries()){
@@ -19,6 +21,27 @@ const serverSocket = (server) => {
             }
         }
     }
+
+    const sendMessage = async (message) => {
+        const senderSocketId = userSocketMap.get(message.sender);
+        const recipientSocketId = userSocketMap.get(message.recipient);
+
+        // save message
+        const createMessage = await Message.create(message);
+
+        const messageData = await Message.findById(createMessage._id)
+        .populate("sender","id email name image color")
+        .populate("recipient","id email name image color");
+
+        if(recipientSocketId){
+            io.to(recipientSocketId).emit("recieveMessage",messageData);
+        }
+        if(senderSocketId){
+            io.to(senderSocketId).emit("recieveMessage",messageData);
+        }
+
+    }
+
     io.on('connection', (socket) => {
         const userId = socket.handshake.query.userId;
         if(userId) {
@@ -27,6 +50,9 @@ const serverSocket = (server) => {
         } else {
             console.log('User connected without userId');
         }
+
+        socket.on('sendMessage',sendMessage);
+
         socket.on('disconnect', ()=>disconnect(socket));
     });
 }

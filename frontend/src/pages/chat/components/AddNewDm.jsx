@@ -27,7 +27,6 @@ const AddNewDm = () => {
                 );
                 if(response.status===200) {
                     setSearchedContacts(response.data.contacts);
-                    console.log(response.data.contacts);
                 }
             } else {
                 setSearchedContacts([]);

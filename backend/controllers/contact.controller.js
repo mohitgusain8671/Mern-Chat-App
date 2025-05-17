@@ -28,7 +28,7 @@ export const searchContacts = async (req, res, next) => {
 
         const sanitizedContacts = contacts.map(contact =>{
                 return {
-                    id: contact._id,
+                    _id: contact._id,
                     name: contact.name,
                     email: contact.email,
                     color: contact.color,
