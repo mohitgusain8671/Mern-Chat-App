@@ -31,6 +31,7 @@ const MessageBar = () => {
   },[emojiRef])
 
   const handleSendMessage = async () => {
+    if (message.trim() === '') return;
     if(selectedChatType==='contact') {
       const messageData = {
         sender: userInfo._id,
@@ -41,6 +42,7 @@ const MessageBar = () => {
       }
       socket.emit("sendMessage",messageData)
     }
+    setMessage("")
   }
 
   return (
