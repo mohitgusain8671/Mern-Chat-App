@@ -12,7 +12,13 @@ import { RiEmojiStickerLine } from 'react-icons/ri'
 const MessageBar = () => {
   const emojiRef = useRef();
   const fileInputRef = useRef();
-  const {selectedChatType, selectedChatData, userInfo} = useAppStore();
+  const {
+    selectedChatType, 
+    selectedChatData, 
+    userInfo,
+    setIsUploading,
+    setFileUploadProgress,
+  } = useAppStore();
   const socket = useSocketContext();
   const [message, setMessage] = useState("")
   const [emojiPicker, setEmojiPicker] = useState(false)
@@ -60,9 +66,18 @@ const MessageBar = () => {
       if(file) {
         const formData = new FormData();
         formData.append("file", file);
-        const response = await apiClient.post(UPLOAD_FILE_MESSAGE,formData,{withCredentials: true});
+        setIsUploading(true);
+        const response = await apiClient.post(UPLOAD_FILE_MESSAGE,formData,{
+          withCredentials: true,
+          onUploadProgress: data => {
+            setFileUploadProgress(Math.round((100*data.loaded)/data.total));
+          }
+        });
         if(response.status===200 && response.data) {
+          setIsUploading(false)
+          setFileUploadProgress(0)
           if(selectedChatType === 'contact'){
+            console.log("Inside msg");
             const messageData = {
               sender: userInfo._id,
               recipient: selectedChatData._id,
@@ -75,6 +90,8 @@ const MessageBar = () => {
         }
       }
     } catch(err){
+      setIsUploading(false)
+      setFileUploadProgress(0)
       console.log(err)
     }
   }
