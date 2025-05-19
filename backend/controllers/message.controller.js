@@ -1,4 +1,6 @@
+import { request } from 'http';
 import Message  from '../models/message.model.js'
+import { mkdirSync, renameSync } from 'fs'
 
 export const getMessages = async (req, res, next) => {
     try {
@@ -21,6 +23,29 @@ export const getMessages = async (req, res, next) => {
         });
 
     } catch (error) {
+        next(error);
+    }
+}
+
+export const uploadFile = async (req, res, next) => {
+    try {
+        if(!req.file){
+            const error = new Error('No file provided');
+            error.statusCode = 400;
+            throw error;
+        }
+        const date = Date.now();
+        let fileDir = `uploads/files/${date}`;
+        let fileName = `${fileDir}/${req.file.originalname}`;
+        mkdirSync(fileDir,{recursive: true});
+        renameSync(req.file.path, fileName);
+        
+        res.status(200).json({
+            success: true,
+            message: 'File uploaded successfully',
+            filePath : fileName
+        });
+    } catch (error){
         next(error);
     }
 }

@@ -1,6 +1,8 @@
 import { TooltipWrapper } from '@/components/ToolTipWrapper'
 import { useSocketContext } from '@/context/SocketContext'
+import { apiClient } from '@/lib/api-client'
 import { useAppStore } from '@/store'
+import { UPLOAD_FILE_MESSAGE } from '@/utils/constants'
 import EmojiPicker from 'emoji-picker-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { GrAttachment } from 'react-icons/gr'
@@ -9,6 +11,7 @@ import { RiEmojiStickerLine } from 'react-icons/ri'
 
 const MessageBar = () => {
   const emojiRef = useRef();
+  const fileInputRef = useRef();
   const {selectedChatType, selectedChatData, userInfo} = useAppStore();
   const socket = useSocketContext();
   const [message, setMessage] = useState("")
@@ -45,6 +48,38 @@ const MessageBar = () => {
     setMessage("")
   }
 
+  const handleAttachementClick = ()=>{
+    if(fileInputRef.current){
+      fileInputRef.current.click()
+    }
+  }
+
+  const handleAttachementChange = async (event) => {
+    try {
+      const file = event.target.files[0];
+      if(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await apiClient.post(UPLOAD_FILE_MESSAGE,formData,{withCredentials: true});
+        if(response.status===200 && response.data) {
+          if(selectedChatType === 'contact'){
+            const messageData = {
+              sender: userInfo._id,
+              recipient: selectedChatData._id,
+              content: undefined,
+              messageType: "file",
+              fileUrl: response.data.filePath,
+            }
+            socket.emit("sendMessage",messageData)
+          }
+        }
+      }
+    } catch(err){
+      console.log(err)
+    }
+  }
+
+
   return (
     <div className='h-[10dvh] bg-[#1c1d25] flex justify-center items-center px-8 mb-6 gap-6'>
       <div className="flex-1 flex rounded-md items-center gap-5 pr-5 bg-[#2a2b33]">
@@ -57,10 +92,11 @@ const MessageBar = () => {
         />
         
         <TooltipWrapper description={'Attachements'}>
-          <button className='text-neutral-500 focus:border-none focus:outline-none hover:text-white duration-300 transition-all'>
+          <button className='text-neutral-500 focus:border-none focus:outline-none hover:text-white duration-300 transition-all' onClick={handleAttachementClick}>
             <GrAttachment className='text-2xl' />
           </button>
         </TooltipWrapper>
+        <input type="file" className='hidden' ref={fileInputRef} onChange={handleAttachementChange} />
         <div className="relative">
           <TooltipWrapper description={'Emoji'}>
               <button 
