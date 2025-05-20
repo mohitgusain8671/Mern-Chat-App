@@ -13,7 +13,9 @@ const ChatHeader = () => {
         <div className="flex gap-3 items-center justify-center">
           {/* Current Chat Name */}
           <div className='w-12 h-12 relative' >
-                <Avatar className="h-12 w-12 rounded-full overflow-hidden" >
+            {
+              selectedChatType==='contact'?
+              <Avatar className="h-12 w-12 rounded-full overflow-hidden" >
                     {
                         selectedChatData.image ? 
                         <AvatarImage src={`${HOST}/${selectedChatData.image}`} alt="profile" className="object-cover w-full h-full"/> :
@@ -23,9 +25,13 @@ const ChatHeader = () => {
                             {selectedChatData.name?selectedChatData.name.split("").shift():selectedChatData.email.split("").shift()}
                         </div>)
                     }
-                </Avatar>
+              </Avatar> : 
+              <div className='bg-[#ffffff22] h-12 w-12 flex items-center justify-center rounded-full ' >#</div>
+            }
+                
             </div>
             <div>
+              {selectedChatType==='channel' && selectedChatData.name}
               {selectedChatType==='contact' && ( selectedChatData.name ? selectedChatData.name : selectedChatData.email ) }
             </div>
         </div>

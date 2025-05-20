@@ -105,3 +105,26 @@ export const getDMContacts = async (req, res, next) => {
         next(error);
     }
 }
+
+export const getAllContacts = async (req, res, next) => {
+    try {
+        const users = await User.find(
+            {_id:{$ne:req.userId}},
+            "name _id email"
+        )
+        if(!users) {
+            const error = new Error('No contacts found');
+            error.status = 404;
+            throw error;
+        }
+        const contacts = users.map(user => ({
+            label: user.name ? `${user.name}` : user.email,
+            value: user._id,
+            email: user.email,
+        }));
+        return res.status(200).json({contacts});
+
+    } catch (error) {
+        next(error);
+    }
+}
