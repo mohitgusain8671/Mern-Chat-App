@@ -1,6 +1,7 @@
 import { Server as SocketIOServer } from 'socket.io'
 import { ORIGIN } from './config/env.js';
 import Message from './models/message.model.js';
+import Channel from './models/channel.model.js'
 
 const serverSocket = (server) => {
     const io = new SocketIOServer(server,{
@@ -42,6 +43,40 @@ const serverSocket = (server) => {
 
     }
 
+    const sendChannelMessage = async(message) => {
+        const { channelId, sender, content, messageType, fileUrl } = message;
+        const newMessage = await Message.create({
+            sender,
+            recipient: null,
+            content,
+            timeStamp: Date.now(),
+            messageType,
+            fileUrl
+        })
+        const messageData = await Message.findById(newMessage._id)
+        .populate("sender","id email name image color").exec();
+
+        await Channel.findByIdAndUpdate(channelId, {
+            $push: { messages: newMessage._id }
+        });
+
+        const channel = await Channel.findById(channelId).populate("members").exec();
+        const finalData = {...messageData._doc, channelId: channel._id, channelName: channel.name};
+
+        if(channel && channel.members){
+            channel.members.forEach((member) => {
+                const socketId = userSocketMap.get(member._id.toString());
+                if(socketId){
+                    io.to(socketId).emit("recieve-channel-message", finalData);
+                } 
+            });
+            const adminSocketId = userSocketMap.get(channel.admin._id.toString());
+            if(adminSocketId){
+                io.to(adminSocketId).emit("recieve-channel-message", finalData);
+            }
+        }
+    }
+
     io.on('connection', (socket) => {
         const userId = socket.handshake.query.userId;
         if(userId) {
@@ -52,9 +87,12 @@ const serverSocket = (server) => {
         }
 
         socket.on('sendMessage',sendMessage);
+        socket.on('send-channel-message',sendChannelMessage);
 
         socket.on('disconnect', ()=>disconnect(socket));
     });
+
+
 }
 
 export default serverSocket;
