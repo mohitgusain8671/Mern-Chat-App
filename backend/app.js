@@ -9,7 +9,11 @@ import contactRouter from './routes/contact.routes.js';
 import serverSocket from './socket.js';
 import messageRouter from './routes/messagesRoutes.js';
 import channelRouter from './routes/channel.routes.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
 
 app.use(cors({
@@ -18,8 +22,8 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use("/uploads/profiles",express.static("uploads/profiles"));
-app.use("/uploads/files", express.static("uploads/files"));
+app.use("/uploads/profiles",express.static(path.join(__dirname, "uploads/profiles")));
+app.use("/uploads/files", express.static(path.join(__dirname, "uploads/files")));
 
 app.use(cookieParser());
 app.use(express.json());
