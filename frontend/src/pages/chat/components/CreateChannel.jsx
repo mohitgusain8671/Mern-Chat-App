@@ -7,7 +7,7 @@ import { apiClient } from '@/lib/api-client'
 import { CREATE_CHANNEL, GET_ALL_CONTACTS } from '@/utils/constants'
 import { useAppStore } from '@/store'
 import { Button } from '@/components/ui/button'
-import MultipleSelector from '@/components/ui/MultipleSelect'
+import MultipleSelector from '@/components/ui/multipleselect'
 import { toast } from 'sonner'
 
 const CreateChannel = () => {
