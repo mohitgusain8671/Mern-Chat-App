@@ -128,3 +128,28 @@ export const getAllContacts = async (req, res, next) => {
         next(error);
     }
 }
+
+export const deleteContact = async (req, res, next) => {
+    try {
+        const userId = req.userId;
+        const contactId = req.body.contactId;
+        const messages = await Message.deleteMany({
+            $or: [
+                { sender: userId, recipient: contactId },
+                { sender: contactId, recipient: userId }
+            ]
+        });
+        if(messages.acknowledged === false) {
+            const error = new Error('Failed to delete messages');
+            error.status = 400;
+            throw error;
+        }
+        return res.status(200).json({ 
+            success: true,
+            message: 'Contact deleted successfully',
+            deletedCount: messages.deletedCount 
+        });
+    } catch(error) {
+        next(error);
+    }
+}

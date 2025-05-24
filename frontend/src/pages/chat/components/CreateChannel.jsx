@@ -58,9 +58,6 @@ const CreateChannel = () => {
                 toast.error(error.response.data.error);
             }
         }
-
-        
-
     }
 
 
@@ -96,7 +93,6 @@ const CreateChannel = () => {
                         emptyIndicator = {
                             <p className='text-center text-lg leading-10 text-gray-600'>No Result Found</p>
                         }
-
                     />
                 </div>
                 <div>

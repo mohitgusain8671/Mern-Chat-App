@@ -1,3 +1,4 @@
+
 export const createChatSlice = (set,get) => ({
     selectedChatType: undefined,
     selectedChatData: undefined,
@@ -47,6 +48,7 @@ export const createChatSlice = (set,get) => ({
             channels.splice(index,1);
             channels.unshift(data);
         }
+        set({channels: channels})
     },
 
     addContactInDMContacts : (message) => {
@@ -63,5 +65,34 @@ export const createChatSlice = (set,get) => ({
             dmContacts.unshift(fromData);
         }
         set({ dmContacts: dmContacts });
+    },
+    removeContactinDMContacts: (contact) => {
+        const contactId = contact._id;
+        const dmContacts = get().dmContacts;
+        const index = dmContacts.findIndex(item => item._id === contactId);
+        if(index !== -1 && index !== undefined) {
+            dmContacts.splice(index, 1);
+        }
+        set({ dmContacts: dmContacts });
+    },
+    removeChannelInChannelList: (channel) => {
+        const channelId = channel._id;
+        const channels = get().channels;
+        const index = channels.findIndex(item => item._id === channelId);
+        if(index !== -1 && index !== undefined) {
+            channels.splice(index, 1);
+        }
+        set({ channels: channels });
+    },
+    UpdateChannelInfo: (channel)=>{
+        const channelId = channel._id;
+        const channels = get().channels;
+        const index = channels.findIndex(item =>
+            item._id === channelId
+        );
+        if(index !== -1 && index !== undefined) {
+            channels[index] = channel;
+        }
+        set({ channels: channels });
     }
 })

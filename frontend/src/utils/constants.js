@@ -13,6 +13,8 @@ export const CONTACT_ROUTES = 'api/v1/contacts'
 export const SEARCH_CONTACTS = `${CONTACT_ROUTES}/search`
 export const GET_DM_CONTACTS = `${CONTACT_ROUTES}/dm-contacts`
 export const GET_ALL_CONTACTS = `${CONTACT_ROUTES}/get-all-contacts`
+export const DELETE_CONTACT = `${CONTACT_ROUTES}/delete-contact`
+
 
 export const MESSAGES_ROUTES = 'api/v1/messages'
 export const GET_MESSAGES = `${MESSAGES_ROUTES}/get-messages`
@@ -22,5 +24,7 @@ export const CHANNEL_ROUTES = `api/v1/channels`
 export const CREATE_CHANNEL = `${CHANNEL_ROUTES}/create-channel`
 export const GET_USER_CHANNELS = `${CHANNEL_ROUTES}/get-user-channels`
 export const GET_CHANNEL_MESSAGES = `${CHANNEL_ROUTES}/channel-messages`
+export const DELETE_CHANNEL = `${CHANNEL_ROUTES}/delete-channel`;
+export const UPDATE_CHANNEL = `${CHANNEL_ROUTES}/edit-channel`;
 
 

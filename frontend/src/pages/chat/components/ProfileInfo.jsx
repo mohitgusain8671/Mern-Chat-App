@@ -59,8 +59,6 @@ const ProfileInfo = () => {
                     onClick={handleLogout}
                 />
             </TooltipWrapper>
-                        
-            
         </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import Message from './message.model.js'
 const channelSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -41,6 +42,13 @@ channelSchema.pre("findOneAndUpdate",function(next){
     this.set({ updated_at: Date.now() });
     next();
 })
+channelSchema.pre('findOneAndDelete', async function (next) {
+    const channel = await this.model.findOne(this.getQuery());
+    if (channel && channel.messages && channel.messages.length > 0) {
+        await Message.deleteMany({ _id: { $in: channel.messages } });
+    }
+    next();
+});
 
 const Channel = mongoose.model("Channels",channelSchema);
 

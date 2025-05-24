@@ -13,14 +13,6 @@ import CreateChannel from '../components/CreateChannel'
 const ContactContainer = () => {
   const { setDMContacts, dmContacts, channels, setChannels } = useAppStore();
   useEffect(()=>{
-    const getContacts = async () => {
-      const response = await apiClient.get(GET_DM_CONTACTS,{ withCredentials: true });
-      if(response.status===200){
-        setDMContacts(response.data.contacts);
-      } else{
-        toast.error("Error Fetching Contacts");
-      }
-    }
     const getChannels = async () => {
       const res = await apiClient.get(GET_USER_CHANNELS,{ withCredentials: true });
       if(res.status===200){
@@ -29,8 +21,18 @@ const ContactContainer = () => {
         toast.error("Error Fetching Channels");
       }
     }
-    getContacts();
     getChannels();
+  },[])
+  useEffect(()=>{
+    const getContacts = async () => {
+      const response = await apiClient.get(GET_DM_CONTACTS,{ withCredentials: true });
+      if(response.status===200){
+        setDMContacts(response.data.contacts);
+      } else{
+        toast.error("Error Fetching Contacts");
+      }
+    }
+    getContacts();
   },[])
   return (
     <div className='relative md:w-[40vw] lg:w-[35vw] xl:w-[25vw] bg-[#1b1c24] border-r-2 border-[#2f303b] w-full'>

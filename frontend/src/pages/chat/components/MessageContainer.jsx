@@ -44,7 +44,7 @@ const MessageContainer = () => {
         console.log(err);
       }
     }
-    if(selectedChatData._id){
+    if(selectedChatData && selectedChatData._id){
       if(selectedChatType==='contact') getMessages();
       else if(selectedChatType==='channel') getChannelMessages();
     }
