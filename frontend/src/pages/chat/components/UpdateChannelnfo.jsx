@@ -26,7 +26,7 @@ const UpdateChannelnfo = ({contact}) => {
     const [channelName, setChannelName] = useState(contact.name);
     const [allContacts, setAllContacts] = useState([]);
     const [selectedChannelMembers, setSelectedChannelMembers] = useState(contact.members);
-
+    const [isChrome, setIsChrome] = useState(false);
     useEffect(()=>{
         const getData = async ()=>{
             const res = await apiClient.get(GET_ALL_CONTACTS,{withCredentials: true});
@@ -40,6 +40,11 @@ const UpdateChannelnfo = ({contact}) => {
         }));
         setSelectedChannelMembers(members);
         getData();
+        const isChromeBrowser =
+            /Chrome/.test(navigator.userAgent) &&
+            !/Edg/.test(navigator.userAgent) &&
+            !/OPR/.test(navigator.userAgent); // exclude Edge and Opera
+        setIsChrome(isChromeBrowser);
     },[]);
     const handleEdit = async () => {
         try {
@@ -83,7 +88,7 @@ const UpdateChannelnfo = ({contact}) => {
         }
     }
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-3 mr-2">
         <TooltipWrapper description={'Edit Channel'}>
             <FiEdit2 
                 className={`text-lg ${selectedChatData && selectedChatData._id === contact._id? 'text-white/70 ': 'text-neutral-400/50'} hover:text-white`} 
@@ -104,7 +109,7 @@ const UpdateChannelnfo = ({contact}) => {
         </TooltipWrapper>
         {/* DELETE CHANNEL DIALOG */}
         <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal} >
-            <DialogContent className='bg-[#181920] border-none text-white w-[300px] flex flex-col' >
+            <DialogContent className={`bg-[#181920] border-none text-white w-[380px] flex flex-col ${isChrome ? 'chrome-dialog' : ''}`} >
                 <DialogHeader>
                     <DialogTitle className='text-center'>{`Delete ${contact.name}`}</DialogTitle>
                     <DialogDescription className='text-center' >All Messages would be deleted too</DialogDescription>
@@ -123,7 +128,7 @@ const UpdateChannelnfo = ({contact}) => {
         </Dialog>
         {/* EDIT CHANNEL DIALOG */}
         <Dialog open={showEditModal} onOpenChange={setShowEditModal} >
-            <DialogContent className='bg-[#181920] border-none text-white w-[380px] flex flex-col' >
+            <DialogContent className={`bg-[#181920] border-none text-white w-[380px] flex flex-col ${isChrome ? 'chrome-dialog' : ''}`} >
                 <DialogHeader>
                     <DialogTitle className='text-center'>{`Edit ${contact.name} Details`}</DialogTitle>
                     <DialogDescription></DialogDescription>

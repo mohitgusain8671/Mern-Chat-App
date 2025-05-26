@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { getColor } from '@/lib/utils';
 import { useAppStore } from '@/store'
 import { DELETE_CONTACT, HOST } from '@/utils/constants';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { AiOutlineUserDelete } from "react-icons/ai";
 import { apiClient } from '@/lib/api-client';
@@ -22,6 +22,15 @@ const ContactList = ({ contacts, isChannel = false}) => {
         removeContactinDMContacts,
         userInfo
     } = useAppStore();
+    const [isChrome, setIsChrome] = useState(false);
+    
+    useEffect(() => {
+        const isChromeBrowser =
+        /Chrome/.test(navigator.userAgent) &&
+        !/Edg/.test(navigator.userAgent) &&
+        !/OPR/.test(navigator.userAgent); // exclude Edge and Opera
+        setIsChrome(isChromeBrowser);
+    }, []);
     const handleClick = (contact) => {
         if(isChannel) setSelectedChatType('channel');
         else setSelectedChatType('contact');
@@ -83,7 +92,7 @@ const ContactList = ({ contacts, isChannel = false}) => {
                 </div>
                 {
                     !isChannel &&(<>
-                    <div className={`text-lg ${selectedChatData && selectedChatData._id === contact._id? 'text-white/70': 'text-gray-500/50'}`} onClick={(e)=>{
+                    <div className={`text-lg ${selectedChatData && selectedChatData._id === contact._id? 'text-white/70': 'text-gray-500/50'} mr-2`} onClick={(e)=>{
                         e.stopPropagation()
                         setOpenDeleteContactModel(true)
                     }}>
@@ -92,7 +101,7 @@ const ContactList = ({ contacts, isChannel = false}) => {
                         </TooltipWrapper>
                     </div>
                     <Dialog open={openDeleteContactModel} onOpenChange={setOpenDeleteContactModel} >
-                        <DialogContent className='bg-[#181920] border-none text-white w-[300px] flex flex-col' >
+                        <DialogContent className={`bg-[#181920] border-none text-white w-[300px] flex flex-col ${isChrome ? 'chrome-dialog' : ''}`} >
                             <DialogHeader>
                                 <DialogTitle className='text-center'>{`Delete ${(contact.name ? contact.name : contact.email )}`}</DialogTitle>
                                 <DialogDescription className='text-center' >All Messages would be deleted</DialogDescription>

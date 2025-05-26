@@ -18,6 +18,7 @@ const CreateChannel = () => {
     const [allContacts, setAllContacts] = useState([]);
     const [selectedContacts, setSelectedContacts] = useState([]);
     const [ChannelName, setChannelName] = useState('')
+    const [isChrome, setIsChrome] = useState(false);
 
     useEffect(()=>{
         const getData = async ()=>{
@@ -25,6 +26,11 @@ const CreateChannel = () => {
             setAllContacts(res.data.contacts);
         }
         getData();
+        const isChromeBrowser =
+            /Chrome/.test(navigator.userAgent) &&
+            !/Edg/.test(navigator.userAgent) &&
+            !/OPR/.test(navigator.userAgent); // exclude Edge and Opera
+        setIsChrome(isChromeBrowser);
     },[]);
 
     const validateCreateChannel = ()=> {
@@ -70,7 +76,7 @@ const CreateChannel = () => {
             />
         </TooltipWrapper>
         <Dialog open={newChannelModel} onOpenChange={setNewChannelModel} >
-            <DialogContent className='bg-[#181920] border-none text-white w-[400px] flex flex-col' >
+            <DialogContent className={`bg-[#181920] border-none text-white w-[400px] flex flex-col ${isChrome ? 'chrome-dialog' : ''}`} >
                 <DialogHeader>
                     <DialogTitle>Fill Details to Create New Channel</DialogTitle>
                     <DialogDescription></DialogDescription>

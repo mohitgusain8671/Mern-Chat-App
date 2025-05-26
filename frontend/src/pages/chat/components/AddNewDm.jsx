@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TooltipWrapper } from '@/components/ToolTipWrapper'
 import { FaPlus } from 'react-icons/fa'
 import { Input } from '@/components/ui/input'
@@ -17,6 +17,15 @@ const AddNewDm = () => {
 
     const [openNewContactModel, setOpenNewewContactModel] = useState(false);
     const [searchedContacts, setSearchedContacts] = useState([]);
+    const [isChrome, setIsChrome] = useState(false);
+
+    useEffect(() => {
+        const isChromeBrowser =
+        /Chrome/.test(navigator.userAgent) &&
+        !/Edg/.test(navigator.userAgent) &&
+        !/OPR/.test(navigator.userAgent); // exclude Edge and Opera
+        setIsChrome(isChromeBrowser);
+    }, []);
 
     const searchContacts = async (searchQuery) => {
         try {
@@ -52,7 +61,7 @@ const AddNewDm = () => {
             />
         </TooltipWrapper>
         <Dialog open={openNewContactModel} onOpenChange={setOpenNewewContactModel} >
-            <DialogContent className='bg-[#181920] border-none text-white w-[400px] flex flex-col' >
+            <DialogContent className={`bg-[#181920] border-none text-white w-[400px] flex flex-col ${isChrome ? 'chrome-dialog' : ''}`} >
                 <DialogHeader>
                     <DialogTitle>Add New Friend</DialogTitle>
                     <DialogDescription></DialogDescription>
